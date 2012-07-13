@@ -32,7 +32,6 @@ end
 
 template "/etc/mcollective/server.cfg" do
   source "server.cfg.erb"
-  mode 0600
   notifies :restart, "service[mcollective]", :delayed
 end
 
@@ -54,5 +53,5 @@ service "mcollective" do
      provider Chef::Provider::Service::Init
   end
     supports :restart => true, :status => true
-    action [:enable, :start]
+    action :start
 end
