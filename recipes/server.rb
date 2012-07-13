@@ -6,14 +6,18 @@ remote_directory "/var/chef/gems" do
   recursive true
 end
 
-gem_package("stomp") do
-  gem_binary("/var/chef/gems/stomp-1.2.4.gem")
-  options("--no-ri --no-rdoc")
+gem_package "stomp" do
+  source "/var/chef/gems/stomp-1.2.4.gem"
+  options "--no-ri --no-rdoc"
+  version "1.2.4"
+  action :install
 end
 
-gem_package("mcollective") do
-  gem_binary("/var/chef/gems/mcollective-2.1.0.gem")
-  options("--no-ri --no-rdoc")
+gem_package "mcollective" do
+  source "/var/chef/gems/mcollective-2.1.0.gem"
+  options "--no-ri --no-rdoc"
+  version "2.1.0"
+  action :install
 end
 
 directory "/etc/mcollective" do
