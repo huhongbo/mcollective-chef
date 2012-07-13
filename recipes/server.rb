@@ -45,7 +45,7 @@ template "#{server_path}/mcollective" do
 end
 
 service "mcollective" do
-  case node[:os]
+  case node[:platform]
   when "hpux"
      provider Chef::Provider::Service::Hpux
   when "aix"
