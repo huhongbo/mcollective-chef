@@ -39,7 +39,7 @@ service_path = value_for_platform(
   "default" => "/etc/init.d"
 )
 
-template "#{server_path}/mcollective" do
+template "#{service_path}/mcollective" do
   source "mcollective.erb"
   mode 0755
 end
