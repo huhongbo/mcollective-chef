@@ -23,6 +23,9 @@ end
 directory "/etc/mcollective" do
   action :create
 end
+directory "/var/chef/lock" do
+  action :create
+end
 
 remote_directory "#{node["mcollective"]["libdir"]}" do
   source "plugins"
