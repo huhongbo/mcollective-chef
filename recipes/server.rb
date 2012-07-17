@@ -67,7 +67,7 @@ ruby_block "store node data locally" do
     node.run_list.roles.each do |role|
         state.puts("role.#{role}")
     end
-    node.run_list.tags.each do |tag|
+    node[:tags].each do |tag|
       state.puts("tag.#{tag}")
     end    
 
