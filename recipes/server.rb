@@ -55,3 +55,19 @@ service "mcollective" do
     supports :restart => true, :status => true
     action :start
 end
+
+ruby_block "store node data locally" do
+  block do
+    state = File.open("/etc/mcollective/chefnode.txt", "w")
+
+    node.run_state[:seen_recipes].keys.each do |recipe|
+        state.puts("recipe.#{recipe}")
+    end
+
+    node.run_list.roles.each do |role|
+        state.puts("role.#{role}")
+    end
+
+    state.close
+  end
+end
