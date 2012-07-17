@@ -91,3 +91,9 @@ else
 
   state.close
 end
+
+ruby_block "echo 123" do
+  block do
+    puts "hello"
+  end
+end
