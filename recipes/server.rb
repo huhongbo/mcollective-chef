@@ -94,6 +94,6 @@ end
 
 ruby_block "echo 123" do
   block do
-   puts File.open("/etc/mcollective/chefnode.txt").read 
+   puts ::File.open("/etc/mcollective/chefnode.txt").read 
   end
 end
