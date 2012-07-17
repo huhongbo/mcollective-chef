@@ -60,7 +60,7 @@ service "mcollective" do
 end
 
 ruby_block "store node data locally" do
-  block do
+  #block do
     
     state = File.open("/etc/mcollective/chefnode.txt", "w")
     node.run_state[:seen_recipes].keys.each do |recipe|
@@ -74,6 +74,6 @@ ruby_block "store node data locally" do
     end    
     
     state.close  
-  end
-  action :create
+  #end
+  #action :create
 end
