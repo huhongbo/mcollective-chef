@@ -59,11 +59,11 @@ service "mcollective" do
     action :start
 end
 
-unless node[:os] == "hpux"
+
   ruby_block "store node data locally" do
     block do
     
-      state = File.open("/etc/mcollective/chefnode.txt", "w")
+      state = ::File.open("/etc/mcollective/chefnode.txt", "w")
       node.run_state[:seen_recipes].keys.each do |recipe|
         state.puts("recipe.#{recipe}")
       end
@@ -77,23 +77,4 @@ unless node[:os] == "hpux"
       state.close  
     end
   end
-else
-  state = File.open("/etc/mcollective/chefnode.txt", "w")
-  node.run_state[:seen_recipes].keys.each do |recipe|
-    state.puts("recipe.#{recipe}")
-  end
-  node.run_list.roles.each do |role|
-    state.puts("role.#{role}")
-  end
-  node[:tags].each do |tag|
-    state.puts("tag.#{tag}")
-  end    
 
-  state.close
-end
-
-ruby_block "echo 123" do
-  block do
-   puts ::File.open("/etc/mcollective/chefnode.txt").read 
-  end
-end
