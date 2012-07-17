@@ -61,7 +61,11 @@ end
 
 ruby_block "store node data locally" do
   block do
+  if File.exist?("/etc/mcollective/chefnode.txt")
     state = File.open("/etc/mcollective/chefnode.txt", "w")
+  else
+    state = File.new("/etc/mcollective/chefnode.txt", "w")
+  end
 
     node.run_state[:seen_recipes].keys.each do |recipe|
         state.puts("recipe.#{recipe}")
