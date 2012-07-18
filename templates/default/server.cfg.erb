@@ -1,7 +1,8 @@
 topicprefix = /topic/
 libdir = <%= node["mcollective"]["libdir"] %>
 logfile = /var/log/mcollective.log
-loglevel = info
+#loglevel = info
+loglevel = debug
 daemonize = 1
 keeplogs = 1
 identity = <%= node.hostname %>
