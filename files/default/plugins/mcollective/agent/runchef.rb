@@ -9,12 +9,6 @@ module MCollective
                :url         => "https://github.com/dn365/mcollective-chef",
                :timeout     => 300
                
-      action "echo" do
-        validate :msg, String
-        
-        reply[:msg] = request[:msg]
-      end
-      
       action "chefrun" do 
         reply[:stdout] = ""
         reply[:stderr] = ""

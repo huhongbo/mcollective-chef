@@ -6,20 +6,6 @@ metadata    :name        => "run chef echo",
             :url         => "https://github.com/dn365/mcollective-chef",
             :timeout     => 300
 
-action "echo", :description => "puts echo" do
-	display :always
-	
-	input :msg,
-		  :prompt => "puts echo",
-		  :description => "puts echo",
-		  :type => :string,
-		  :validation => '^.+$',
-		  :optional => false,
-		  :maxlength => 60
-	output :msg,
-		   :description => "cmd outpus info",
-           :display_as => "output"
-end
 action "chefrun", :description => "chef client run" do
 	display :always
 	
