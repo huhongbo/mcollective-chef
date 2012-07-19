@@ -78,7 +78,7 @@ end
     end
   end
   
-ruby_blok "create facts file" do
+ruby_block "create facts file" do
   block do
     state = ::File.open("/etc/mcollective/facts.yaml", "w")
     state.puts("---\n")
