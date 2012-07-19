@@ -90,7 +90,24 @@ ruby_block "create facts file" do
     state.close
   end
 end
-  
+
+if File.exist?("/var/log/mcollective.log")
+  file_time = File.mtime("/var/log/mcollective.log").strftime("%Y%m%d%H%M%S")
+  time_now = Time.now.strftime("%Y%m%d%H%M%S") 
+  time_value = (time_now.to_i - file_time.to_i) / 60
+  unless time_value < 3
+    service "mcollective" do
+      case node[:platform]
+      when "hpux"
+         provider Chef::Provider::Service::Hpux
+      when "aix"
+         provider Chef::Provider::Service::Init
+      end
+        supports :restart => true, :status => true
+        action :restart
+    end
+  end
+end
   
 
 
