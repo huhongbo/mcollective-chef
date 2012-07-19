@@ -77,4 +77,19 @@ end
       state.close  
     end
   end
+  
+ruby_blok "create facts file" do
+  block do
+    state = ::File.open("/etc/mcollective/facts.yaml", "w")
+    state.puts("---\n")
+    node['mcollective']['fact_whitelist'].each do |facts|
+      state.puts("#{facts}: node.facts")
+    end
+    
+    state.close
+  end
+end
+  
+  
+
 
