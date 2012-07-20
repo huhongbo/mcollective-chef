@@ -74,23 +74,29 @@ case "$1" in
 
         ${mcollectived} --pid=${pidfile} --config="/etc/mcollective/server.cfg"
         if [ $? = 0 ]; then
-            log_success_msg
+            #log_success_msg
             touch $lock
             exit 0
         else
-            log_failure_msg
+            #log_failure_msg
             exit 1
         fi
         ;;
     stop)
         echo -n "Shutting down mcollective: "
-
+		
+		<% unless node.os == "hpux" %>
         if [ -s ${pidfile} ]; then
             kill `cat ${pidfile}` >/dev/null 2>&1
         fi
+		<% else %>
+		psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
+		kill -9 $psfile
+		<% end %>
+		
         rm -f ${pidfile}
 
-        log_success_msg
+        #log_success_msg
         rm -f $lock
         ;;
     restart)
