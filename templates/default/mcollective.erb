@@ -58,23 +58,27 @@ lock="/var/chef/lock/mcollective"
 case "$1" in
     start)
         echo -n "Starting mcollective: "
-
+		<% unless node.os == "hpux" %>
         if [ -f ${lock} ]; then
             # we were not shut down correctly
-			<% unless node.os == "hpux" %>
             if [ -s ${pidfile} ]; then
                 kill `cat ${pidfile}` >/dev/null 2>&1
-            fi
-			<% else %>
-			psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
-			kill -9 $psfile
-			<% end %>
-			
+            fi		
             rm -f ${pidfile}
 
             rm -f ${lock}
             sleep 2
         fi
+		<% else %>
+		psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
+		kill -9 $psfile
+		if [ -f ${lock} ]; then
+			rm -f ${pidfile}
+
+        	rm -f ${lock}
+			sleep 2
+		fi
+		<% end %>
 
         rm -f ${pidfile}
 
