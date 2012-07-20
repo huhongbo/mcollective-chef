@@ -30,6 +30,9 @@ pidfile="/var/chef/run/mcollectived.pid"
 
 # Lockfile
 lock="/var/chef/lock/mcollective"
+<% if node.os == "hpux" %>
+psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
+<% end %>
 #if [ -d /var/lock/subsys ]; then
     # RedHat/CentOS/etc who use subsys
 #    lock="/var/lock/subsys/mcollective"
@@ -65,12 +68,10 @@ case "$1" in
                 kill `cat ${pidfile}` >/dev/null 2>&1
             fi		
             rm -f ${pidfile}
-
             rm -f ${lock}
             sleep 2
         fi
-		<% else %>
-		psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
+		<% else %>		
 		kill -9 $psfile
 		if [ -f ${lock} ]; then
 			rm -f ${pidfile}
@@ -100,7 +101,6 @@ case "$1" in
             kill `cat ${pidfile}` >/dev/null 2>&1
         fi
 		<% else %>
-		psfile=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}')
 		kill -9 $psfile
 		<% end %>
 		
