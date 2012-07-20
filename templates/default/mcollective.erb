@@ -23,7 +23,7 @@ pidfile="/var/run/mcollectived.pid"
 <% elsif node.os == "hpux" %>
 mcollectived="/usr/local/ruby1.9/bin/mcollectived"
 pidfile="/var/run/mcollectived.pid"
-psfile=`ps -ef|grep mcollective|grep -v grep|awk '{print $2}'`
+psfile=`ps -ef|grep mcollective|grep ruby|grep -v grep|awk '{print $2}'`
 <% elsif node.os == "aix" %>
 mcollectived="/opt/freeware/ruby1.9/bin/mcollectived"
 pidfile="/var/chef/run/mcollectived.pid"
@@ -87,26 +87,22 @@ status()
 {
 	<% unless node.os == "hpux" %>
         if [ -f ${lock} ]; then
-            if [ -s ${pidfile} ]; then
-                if [ -e /proc/`cat ${pidfile}` ]; then
-                    echo "mcollectived (`cat ${pidfile}`) is running"
-                    exit 0
-                else
-                    echo "mcollectived (`cat ${pidfile}`) is NOT running"
-                    exit 1
-                fi
+           if [ -s ${pidfile} ]; then
+             if [ -e /proc/`cat ${pidfile}` ]; then
+                echo "mcollectived (`cat ${pidfile}`) is running"                   
+              else
+                echo "mcollectived (`cat ${pidfile}`) is NOT running"                   
+              fi
             fi
         else
             echo "mcollectived: service not started"
-            exit 1
+            
         fi
 	<% else %>
 		if [ `ps -ef|grep mcollective|grep -v grep|awk '{print $2}'|wc -l` -ne 0 ]; then
-	            echo "mcollectived (${psfile}) is running"
-	            exit 0
+	    echo "mcollectived (${psfile}) is running"	            
 		else
-			echo "mcollectived: service not started error"
-            exit 1
+		echo "mcollectived: service not started error"
 		fi
 	<% end %>
 }
