@@ -92,9 +92,9 @@ ruby_block "create facts file" do
 end
 
 if File.exist?("/var/log/mcollective.log")
-  file_time = File.mtime("/var/log/mcollective.log").strftime("%Y%m%d%H%M%S")
-  time_now = Time.now.strftime("%Y%m%d%H%M%S") 
-  time_value = (time_now.to_i - file_time.to_i) / 60
+  file_time = File.mtime("/var/log/mcollective.log").to_i
+  time_now = Time.now.to_i 
+  time_value = (time_now - file_time) / 60
   unless time_value < 10
     service "mcollective" do
       case node[:platform]
