@@ -23,6 +23,7 @@ pidfile="/var/run/mcollectived.pid"
 <% elsif node.os == "hpux" %>
 mcollectived="/usr/local/ruby1.9/bin/mcollectived"
 pidfile="/var/run/mcollectived.pid"
+psfile=`ps -ef|grep mcollective|grep -v grep|awk '{print $2}'`
 <% elsif node.os == "aix" %>
 mcollectived="/opt/freeware/ruby1.9/bin/mcollectived"
 pidfile="/var/chef/run/mcollectived.pid"
@@ -30,36 +31,12 @@ pidfile="/var/chef/run/mcollectived.pid"
 
 # Lockfile
 lock="/var/chef/lock/mcollective"
-<% if node.os == "hpux" %>
-psfile=`ps -ef|grep mcollective|grep -v grep|awk '{print $2}'`
-<% end %>
-#if [ -d /var/lock/subsys ]; then
-    # RedHat/CentOS/etc who use subsys
-#    lock="/var/lock/subsys/mcollective"
-#elif [-d /var/lock ]; then
-    # The rest of them
-#    lock="/var/lock/mcollective"
-#else
-	
-#fi
 
-
-# PID directory
-#pidfile="/var/run/mcollectived.pid"
-
-# Source function library.
-#. /lib/lsb/init-functions
-
-# Check that binary exists
-#if ! [ -f $mcollectived ]
-#then
-#    echo "mcollectived binary not found"
-#    exit 0
-#fi
 
 # See how we were called.
-case "$1" in
-    start)
+
+start()
+{
         echo -n "Starting mcollective: "
         if [ -f ${lock} ]; then
             # we were not shut down correctly
@@ -74,62 +51,46 @@ case "$1" in
         rm -f ${pidfile}
 
         ${mcollectived} --pid=${pidfile} --config="/etc/mcollective/server.cfg"
-        if [ $? = 0 ]; then
-            log_success_msg
-            touch $lock
-            exit 0
-        else
-            log_failure_msg
-            exit 1
-        fi
-        ;;
-    stop)
+        touch $lock
+
+}
+stop_mc()
+{
         echo -n "Shutting down mcollective: "
 		
-
+		<% unless node.os == "hpux" %>
         if [ -s ${pidfile} ]; then
             kill `cat ${pidfile}` >/dev/null 2>&1
         fi
-		<% if node.os == "hpux" %>
-		if [ `ps -ef|grep mcollective|grep -v grep|awk '{print $2}'|wc -l` -gt 1 ]; then
-	       	echo ${psfile} > /tmp/mcfile.pid
-	        kill `cat /tmp/mcfile.pid` >/dev/null 2>&1		       
-	 	fi
-		<% end %>
         rm -f ${pidfile}
 
         log_success_msg
         rm -f $lock
-        ;;
-    restart)
-        $0 stop
+		<% else %>
+		kill $psfile >/dev/null 2>&1
+		
+		rm -f ${pidfile}
+
+        log_success_msg
+        rm -f $lock
+		<% end %>
+}
+
+restart()
+{
+        stop_mc
         sleep 2
-        $0 start
-        ;;
-    condrestart)
-        if [ -f $lock ]; then
-            $0 stop
-            # avoid race
-            sleep 2
-            $0 start
-        fi
-        ;;
-    status)
+        start
+}
+
+status()
+{
+	<% unless node.os == "hpux" %>
         if [ -f ${lock} ]; then
             if [ -s ${pidfile} ]; then
-				<% if node.os =="linux" %>
                 if [ -e /proc/`cat ${pidfile}` ]; then
                     echo "mcollectived (`cat ${pidfile}`) is running"
                     exit 0
-				<% elsif node.os == "hpux" %>
-				if [ `cat ${pidfile}` -eq $psfile ]; then
-					echo "mcollectived (`cat ${pidfile}`) is running"
-					exit 0
-				<% elsif node.os == "aix" %>
-				if [ -e /proc/`cat ${pidfile}` ]; then
-                    echo "mcollectived (`cat ${pidfile}`) is running"
-                    exit 0
-				<% end %>
                 else
                     echo "mcollectived (`cat ${pidfile}`) is NOT running"
                     exit 1
@@ -139,13 +100,32 @@ case "$1" in
             echo "mcollectived: service not started"
             exit 1
         fi
-        ;;
-    force-reload)
-        echo "not implemented"
-        ;;
-    *)
-        echo "Usage: mcollectived {start|stop|restart|condrestart|status}"
-        exit 1
-        ;;
+	<% else %>
+		if [ `ps -ef|grep mcollective|grep -v grep|awk '{print $2}'|wc -l` -ne 0 ]; then
+	            echo "mcollectived (${psfile}) is running"
+	            exit 0
+		else
+			echo "mcollectived: service not started error"
+            exit 1
+		fi
+	<% end %>
+}
+case $1 in
+	'start')
+		start
+		;;
+	'stop')
+		stop_mc
+		;;
+	'restart')
+		restart
+		;;
+	'status')
+		status
+		;;
+	*)
+       echo "Usage: mcollectived {start|stop|restart|status}"
+       ;;
+
 esac
-exit 0
+exit $?
