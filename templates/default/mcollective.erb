@@ -91,9 +91,8 @@ case "$1" in
             kill `cat ${pidfile}` >/dev/null 2>&1
         fi
 		<% if node.os == "hpux" %>
-		wps=$(ps -ef|grep mcollective|grep -v grep|awk '{print $2}'|wc -l)
-		if [ ${wps} -gt 1 ]; then
-	        ${psfile} > /tmp/mcfile.pid
+		if [ `ps -ef|grep mcollective|grep -v grep|awk '{print $2}'|wc -l` -gt 1 ]; then
+	       	echo ${psfile} > /tmp/mcfile.pid
 	        kill `cat /tmp/mcfile.pid` >/dev/null 2>&1		       
 	 	fi
 		<% end %>
