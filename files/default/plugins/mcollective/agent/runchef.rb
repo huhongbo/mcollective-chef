@@ -9,7 +9,7 @@ module MCollective
                :url         => "https://github.com/dn365/mcollective-chef",
                :timeout     => 300
                
-      action "chefrun" do 
+      action "run" do 
         reply[:stdout] = ""
         reply[:stderr] = ""
         client = "chef-client"  

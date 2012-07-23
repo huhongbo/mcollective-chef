@@ -6,7 +6,7 @@ metadata    :name        => "run chef echo",
             :url         => "https://github.com/dn365/mcollective-chef",
             :timeout     => 300
 
-action "chefrun", :description => "chef client run" do
+action "run", :description => "chef client run" do
 	display :always
 	
 	output :stdout,
